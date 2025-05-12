@@ -1,0 +1,11 @@
+*
+
+# project fonders and files
+!conf/.env.example
+!docker
+!speechkit
+
+# dependencies and settings
+!pyproject.toml
+!uv.lock
+!requirements.vllm.txt
