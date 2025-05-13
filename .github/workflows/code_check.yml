@@ -1,0 +1,24 @@
+name: Tests
+on: [pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Tests
+    steps:
+      - uses: actions/checkout@v4
+      - id: setup-uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: 3.12
+      - name: Install Dependencies
+        if: steps.setup-uv.outputs.cache-hit != 'true'
+        run: uv sync --all-extras
+# TODO: uncomment this when tests will need database
+#      - name: Docker compose
+#        uses: adambirds/docker-compose-action@v1.5.0
+#        with:
+#          compose-file: "docker-compose.yml"
+      - name: Test
+        run: uv run pytest

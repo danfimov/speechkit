@@ -33,7 +33,7 @@ services:
 
   postgres:
     container_name: speechkit_postgres
-    image: "registry.tochka-tech.com/proxy_docker-io/library/postgres:16"
+    image: postgres:16
     environment:
       POSTGRES_DB: srv_speechkit
       POSTGRES_USER: srv_speechkit
@@ -43,7 +43,7 @@ services:
 
   rabbitmq:
     container_name: speechkit_rabbitmq
-    image: registry.tochka-tech.com/oci_rabbitmq/rabbitmq:latest
+    image: rabbitmq:4.0.8
     environment:
       RABBITMQ_DEFAULT_USER: speechkit
       RABBITMQ_DEFAULT_PASS: look_in_vault
