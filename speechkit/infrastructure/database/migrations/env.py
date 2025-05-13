@@ -4,11 +4,12 @@ from sqlalchemy import engine_from_config, pool
 from speechkit import dependencies
 from speechkit.infrastructure import logs
 from speechkit.infrastructure.database.schemas import sa_metadata
+from speechkit.infrastructure.settings import Settings
 
 
 config = context.config
 target_metadata = sa_metadata
-settings = dependencies.get_settings()
+settings = dependencies.sync_container.get(Settings)
 
 logs.configure_logging(
     log_level=settings.log_level,

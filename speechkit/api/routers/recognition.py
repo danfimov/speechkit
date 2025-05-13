@@ -4,14 +4,14 @@ import typing as tp
 
 import fastapi
 import pydantic
+from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi.responses import JSONResponse
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.security import HTTPBasic
 
-from speechkit import dependencies
 from speechkit.domain.service import recognition_service
 
 
-router = fastapi.APIRouter(tags=['Recognition'], prefix='/recognition')
+router = fastapi.APIRouter(tags=['Recognition'], prefix='/recognition', route_class=DishkaRoute)
 security = HTTPBasic()
 
 
@@ -38,11 +38,9 @@ class RecognitionResponseError(pydantic.BaseModel):
 async def recognition(
     file: tp.Annotated[fastapi.UploadFile, fastapi.File(...)],
     model_name: tp.Annotated[RecognitionModel, fastapi.Form()],
-    service: tp.Annotated[
-        recognition_service.AbstractRecognitionService,
-        fastapi.Depends(dependencies.get_recognition_service),
-    ],
-    credentials: tp.Annotated[HTTPBasicCredentials, fastapi.Depends(security)],  # noqa: ARG001
+    service: FromDishka[recognition_service.AbstractRecognitionService],
+    # TODO: add auth middleware and then add credentials here
+    # credentials: tp.Annotated[HTTPBasicCredentials, fastapi.Depends(security)],
 ) -> JSONResponse:
     try:
         recognised_text = await service.act(

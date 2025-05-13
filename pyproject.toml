@@ -5,10 +5,8 @@ description = "Interface for speech-to-text model"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    # faster asyncio loop
-    "uvloop>=0.21.0",
     # api
-    "uvicorn>=0.34.0",
+    "uvicorn[standard]>=0.34.0",
     "fastapi>=0.115.12",
     "python-multipart>=0.0.20",
     "pydantic>=2.10.6",
@@ -49,6 +47,7 @@ dependencies = [
     "sentry-sdk[fastapi]>=2.24.1",
     "asgi-correlation-id>=4.3.4",
     "structlog>=25.3.0",
+    "dishka>=1.5.3",
 ]
 
 [dependency-groups]

@@ -1,21 +1,19 @@
-import typing as tp
 import uuid
 
-import taskiq
+from dishka.integrations.taskiq import FromDishka, inject
+from taskiq.brokers.shared_broker import async_shared_broker
 
-from speechkit import dependencies
 from speechkit.domain.dto import task_status
 from speechkit.domain.repository import task
 from speechkit.domain.service import inference_runner
 
 
+@async_shared_broker.task
+@inject(patch_module=False)
 async def run_inference(
     task_id: uuid.UUID,
-    task_repository: tp.Annotated[task.AbstractTaskRepository, taskiq.TaskiqDepends(dependencies.get_task_repository)],
-    service: tp.Annotated[
-        inference_runner.AbstractInferenceRunner,
-        taskiq.TaskiqDepends(dependencies.get_inference_runner),
-    ],
+    task_repository: FromDishka[task.AbstractTaskRepository],
+    service: FromDishka[inference_runner.AbstractInferenceRunner],
 ) -> str:
     try:
         result_text = await service.run(task_id=task_id)
