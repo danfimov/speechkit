@@ -1,10 +1,10 @@
 import asyncio
-import logging
 import pathlib
 
 import aiohttp
 import aiohttp_s3_client
 import anyio
+import structlog
 import torch
 import transformers  # type: ignore[import-untyped]
 from optimum import onnxruntime  # type: ignore[import-untyped]
@@ -12,7 +12,7 @@ from optimum import onnxruntime  # type: ignore[import-untyped]
 from speechkit.domain.service import model_downloader
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class HuggingFaceModelDownloader(model_downloader.AbstractModelDownloaderService):

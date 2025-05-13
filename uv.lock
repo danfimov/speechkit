@@ -109,6 +109,19 @@ wheels = [
 ]
 
 [[package]]
+name = "aiopg"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "async-timeout" },
+    { name = "psycopg2-binary" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b0/0a/aba75a9ffcb1704b98c39986344230eaa70c40ac28e5ca635df231db912f/aiopg-1.4.0.tar.gz", hash = "sha256:116253bef86b4d954116716d181e9a0294037f266718b2e1c9766af995639d71", size = 35593, upload-time = "2022-10-26T09:31:49.478Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9b/2f/ab8690bf995171b9a8b60b98a2ca91d4108a42422abf10bf622397437d26/aiopg-1.4.0-py3-none-any.whl", hash = "sha256:aea46e8aff30b039cfa818e6db4752c97656e893fc75e5a5dc57355a9e9dedbd", size = 34770, upload-time = "2022-10-26T09:31:48.019Z" },
+]
+
+[[package]]
 name = "aiormq"
 version = "6.8.1"
 source = { registry = "https://pypi.org/simple" }
@@ -181,6 +194,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f4/ff/a6538245ac1eaa7733ec6740774e9d5add019e2c63caa29e758c16c0afdd/asgi_correlation_id-4.3.4.tar.gz", hash = "sha256:ea6bc310380373cb9f731dc2e8b2b6fb978a76afe33f7a2384f697b8d6cd811d", size = 20075, upload-time = "2024-10-17T11:44:30.324Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d9/ab/6936e2663c47a926e0659437b9333ad87d1ff49b1375d239026e0a268eba/asgi_correlation_id-4.3.4-py3-none-any.whl", hash = "sha256:36ce69b06c7d96b4acb89c7556a4c4f01a972463d3d49c675026cbbd08e9a0a2", size = 15262, upload-time = "2024-10-17T11:44:28.739Z" },
+]
+
+[[package]]
+name = "async-timeout"
+version = "4.0.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/87/d6/21b30a550dafea84b1b8eee21b5e23fa16d010ae006011221f33dcd8d7f8/async-timeout-4.0.3.tar.gz", hash = "sha256:4640d96be84d82d02ed59ea2b7105a0f7b33abe8703703cd0ab0bf87c427522f", size = 8345, upload-time = "2023-08-10T16:35:56.907Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a7/fa/e01228c2938de91d47b307831c62ab9e4001e747789d0b05baf779a6488c/async_timeout-4.0.3-py3-none-any.whl", hash = "sha256:7405140ff1230c310e51dc27b3145b9092d659ce68ff733fb0cefe3ee42be028", size = 5721, upload-time = "2023-08-10T16:35:55.203Z" },
 ]
 
 [[package]]
@@ -869,6 +891,7 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/4d/de/9162872c6e502e9ac8c99a98a8738b2fab408123d11de55022ac4f92562a/onnxruntime-1.22.0-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:f3c0380f53c1e72a41b3f4d6af2ccc01df2c17844072233442c3a7e74851ab97", size = 34298046, upload-time = "2025-05-09T20:26:02.399Z" },
     { url = "https://files.pythonhosted.org/packages/03/79/36f910cd9fc96b444b0e728bba14607016079786adf032dae61f7c63b4aa/onnxruntime-1.22.0-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:c8601128eaef79b636152aea76ae6981b7c9fc81a618f584c15d78d42b310f1c", size = 14443220, upload-time = "2025-05-09T20:25:47.078Z" },
     { url = "https://files.pythonhosted.org/packages/8c/60/16d219b8868cc8e8e51a68519873bdb9f5f24af080b62e917a13fff9989b/onnxruntime-1.22.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:6964a975731afc19dc3418fad8d4e08c48920144ff590149429a5ebe0d15fb3c", size = 16406377, upload-time = "2025-05-09T20:26:14.478Z" },
+    { url = "https://files.pythonhosted.org/packages/36/b4/3f1c71ce1d3d21078a6a74c5483bfa2b07e41a8d2b8fb1e9993e6a26d8d3/onnxruntime-1.22.0-cp312-cp312-win_amd64.whl", hash = "sha256:c0d534a43d1264d1273c2d4f00a5a588fa98d21117a3345b7104fa0bbcaadb9a", size = 12692233, upload-time = "2025-05-12T21:26:16.963Z" },
 ]
 
 [[package]]
@@ -1458,11 +1481,12 @@ dependencies = [
     { name = "soundfile" },
     { name = "sqlalchemy" },
     { name = "starlette-exporter" },
+    { name = "structlog" },
     { name = "taskiq" },
     { name = "taskiq-aio-pika" },
-    { name = "taskiq-asyncpg" },
     { name = "taskiq-fastapi" },
     { name = "taskiq-pipelines" },
+    { name = "taskiq-postgres", extra = ["asyncpg"] },
     { name = "torch", version = "2.7.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'darwin'" },
     { name = "torch", version = "2.7.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform != 'darwin'" },
     { name = "transformers" },
@@ -1510,11 +1534,12 @@ requires-dist = [
     { name = "soundfile", specifier = ">=0.13.1" },
     { name = "sqlalchemy", specifier = ">=2.0.39" },
     { name = "starlette-exporter", specifier = ">=0.23.0" },
+    { name = "structlog", specifier = ">=25.3.0" },
     { name = "taskiq", specifier = "==0.11.17" },
     { name = "taskiq-aio-pika", specifier = "==0.4.1" },
-    { name = "taskiq-asyncpg", specifier = "==0.3.2" },
     { name = "taskiq-fastapi", specifier = "==0.3.4" },
     { name = "taskiq-pipelines", specifier = "==0.1.4" },
+    { name = "taskiq-postgres", extras = ["asyncpg"], specifier = ">=0.1.2" },
     { name = "torch", specifier = ">=2.5.1", index = "https://download.pytorch.org/whl/cpu" },
     { name = "transformers", specifier = "==4.48.3" },
     { name = "uvicorn", specifier = ">=0.34.0" },
@@ -1582,6 +1607,15 @@ wheels = [
 ]
 
 [[package]]
+name = "structlog"
+version = "25.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ff/6a/b0b6d440e429d2267076c4819300d9929563b1da959cf1f68afbcd69fe45/structlog-25.3.0.tar.gz", hash = "sha256:8dab497e6f6ca962abad0c283c46744185e0c9ba900db52a423cb6db99f7abeb", size = 1367514, upload-time = "2025-04-25T16:00:39.167Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f5/52/7a2c7a317b254af857464da3d60a0d3730c44f912f8c510c76a738a207fd/structlog-25.3.0-py3-none-any.whl", hash = "sha256:a341f5524004c158498c3127eecded091eb67d3a611e7a3093deca30db06e172", size = 68240, upload-time = "2025-04-25T16:00:37.295Z" },
+]
+
+[[package]]
 name = "sympy"
 version = "1.14.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1627,16 +1661,6 @@ wheels = [
 ]
 
 [[package]]
-name = "taskiq-asyncpg"
-version = "0.3.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "asyncpg" },
-    { name = "taskiq" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/1d/45/69fa76190e28add927ef220c7e92f06188ba5123108050a32a7c6a38c956/taskiq_asyncpg-0.3.2.tar.gz", hash = "sha256:4f02ba4be248ad3564804d473627365d499f073cc97062671650db2d78a5d5ae", size = 10316, upload-time = "2024-10-21T20:03:29.408Z" }
-
-[[package]]
 name = "taskiq-dependencies"
 version = "1.5.7"
 source = { registry = "https://pypi.org/simple" }
@@ -1670,6 +1694,24 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/57/79/b099aec44fed65f077d88fa4e4a876b7f5b3b50f46f408feb36a4b3c3a71/taskiq_pipelines-0.1.4.tar.gz", hash = "sha256:0ccc58a7d5bc0f19457bf25aec6e8b3d82ce5e63ae4416bc85b47f027aede84b", size = 12885, upload-time = "2025-03-05T02:18:40.615Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e3/e2/0ba3c3797f466cebd5431d8ac70146704cc34346332127a19b2d5f6b28ac/taskiq_pipelines-0.1.4-py3-none-any.whl", hash = "sha256:09b4999f79e74552e4a751f4670c1829eaf494a28ee06d3f47ec5f6f5bf5105d", size = 15810, upload-time = "2025-03-05T02:18:39.041Z" },
+]
+
+[[package]]
+name = "taskiq-postgres"
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiopg" },
+    { name = "taskiq" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d1/fa/b7753755080047b42f97ed99ab781a48acdebdf3d94d0663e2f05c179a64/taskiq_postgres-0.1.2.tar.gz", hash = "sha256:e437d6f856d56c12ccd93e39c63c7d41d0fb4858cee68103f6d9b88b5b3f35b4", size = 12140, upload-time = "2025-05-13T12:54:14.219Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/dc/d7/a22709573f72accaba9b6063d127defa19b66198f96b7bd157dc0a993a00/taskiq_postgres-0.1.2-py3-none-any.whl", hash = "sha256:8c49791162c32d3a1f263df5155e364334a7eba006fba3074e0e3bff45f6add9", size = 16592, upload-time = "2025-05-13T12:54:12.915Z" },
+]
+
+[package.optional-dependencies]
+asyncpg = [
+    { name = "asyncpg" },
 ]
 
 [[package]]

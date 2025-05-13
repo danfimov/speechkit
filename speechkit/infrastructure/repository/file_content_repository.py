@@ -1,14 +1,14 @@
 import http
-import logging
 import uuid
 
 import aiohttp
 import aiohttp_s3_client
+import structlog
 
 from speechkit.domain.repository import file_content as file_content_repo
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class S3FileContentRepository(file_content_repo.AbstractFileContentRepository):

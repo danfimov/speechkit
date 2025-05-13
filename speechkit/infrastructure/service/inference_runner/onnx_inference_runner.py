@@ -1,9 +1,9 @@
 import io
-import logging
 import uuid
 
 import librosa
 import numpy as np
+import structlog
 import torch
 import transformers  # type: ignore[import-untyped]
 from optimum import onnxruntime  # type: ignore[import-untyped]
@@ -11,7 +11,7 @@ from optimum import onnxruntime  # type: ignore[import-untyped]
 from speechkit.domain.service import inference_runner
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class OnnxInferenceRunnerService(
@@ -155,8 +155,13 @@ class OnnxInferenceRunnerService(
             str: The complete transcription text for the audio file
 
         """
+        logger.debug('Starting inference process')
         file_data = await self._get_audio_in_converted_format(task_id)
+        logger.debug('Audio file is converted')
         segments_with_attention_mask = self._split_audio_data_to_segments(audio_data=file_data)
+        logger.debug('Audio file is split into segments')
         transcriptions_for_segments = self._run_inference(segments_with_attention_mask)
+        logger.debug('Inference is done')
         decoded_transcriptions_for_segments = self._decode(transcriptions_for_segments)
+        logger.debug('Transcriptions are decoded')
         return self._postprocess_transcriptions(decoded_transcriptions_for_segments)

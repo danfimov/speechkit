@@ -1,25 +1,25 @@
 import contextlib
 import dataclasses
-import logging
 import pathlib
 from urllib.parse import quote
 
 import onnxruntime as ort  # type: ignore[import-untyped]
 import prometheus_async.aio.web
 import psutil
+import structlog
 import taskiq
 import taskiq.abc.broker
 import taskiq_aio_pika
-import taskiq_asyncpg
 import taskiq_fastapi
 import taskiq_pipelines
 import torch
 import transformers  # type: ignore[import-untyped]
 from optimum import onnxruntime  # type: ignore[import-untyped]
+from taskiq_pg.asyncpg import AsyncpgResultBackend
 
 from speechkit.domain.repository import authentication, file_content, file_metadata, file_system, task
 from speechkit.domain.service import inference_runner, model_downloader, recognition_service
-from speechkit.infrastructure import settings
+from speechkit.infrastructure import logs, settings
 from speechkit.infrastructure.database import session_provider
 from speechkit.infrastructure.repository import (
     auth_storage,
@@ -30,7 +30,7 @@ from speechkit.infrastructure.repository import (
 from speechkit.infrastructure.service import recognition_service as taskiq_recognition_service
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 _exit_stack = contextlib.AsyncExitStack()
 
 _settings: settings.Settings | None = None
@@ -108,7 +108,7 @@ def get_broker() -> taskiq.AsyncBroker:
             _broker = taskiq_aio_pika.AioPikaBroker(
                 url=settings.amqp.get_url(),
             ).with_result_backend(
-                taskiq_asyncpg.AsyncpgResultBackend(
+                AsyncpgResultBackend(
                     f'postgresql://{settings.postgres.user}:{quote(settings.postgres.password.get_secret_value())}@{settings.postgres.host}:{settings.postgres.port}/{settings.postgres.database}',
                 ),
             ).with_middlewares(
@@ -124,6 +124,10 @@ def get_broker() -> taskiq.AsyncBroker:
 
         @_broker.on_event(taskiq.TaskiqEvents.WORKER_STARTUP)
         async def startup(_: taskiq.TaskiqState) -> None:
+            logs.configure_logging(
+                log_level=settings.log_level,
+                json_log=settings.environment not in ('local', 'unknown', 'development'),
+            )
             await preconfigure_inference_runner()
 
         _exit_stack.push_async_callback(_broker.shutdown)

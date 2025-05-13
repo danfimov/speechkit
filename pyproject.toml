@@ -23,7 +23,7 @@ dependencies = [
     "librosa>=0.11.0",
     "numpy>=1.26.4,<2",
     "soundfile>=0.13.1",
-    # for any inferenc
+    # for any inference
     "transformers==4.48.3",
     # load models from s3
     "aiohttp==3.11.12",
@@ -41,13 +41,14 @@ dependencies = [
     "taskiq-aio-pika==0.4.1",
     "taskiq-fastapi==0.3.4",
     "taskiq-pipelines==0.1.4",
-    "taskiq-asyncpg==0.3.2",
+    "taskiq-postgres[asyncpg]>=0.1.2",
     # observability
     "prometheus-client>=0.21.1",
     "prometheus-async>=25.1.0",
     "starlette-exporter>=0.23.0",
     "sentry-sdk[fastapi]>=2.24.1",
     "asgi-correlation-id>=4.3.4",
+    "structlog>=25.3.0",
 ]
 
 [dependency-groups]
@@ -61,12 +62,13 @@ dev = [
     # load testing
     "click>=8.1.8",
     "httpx>=0.28.1",
-    "rich>=13.9.4",
     # types
     "mypy>=1.15.0",
     "types-psutil>=7.0.0.20250218",
     # mocks
     "polyfactory>=2.20.0",
+    # verbose logs
+    "rich>=13.9.4",
 ]
 
 [[tool.uv.index]]
@@ -133,6 +135,11 @@ inline-quotes = "single"
 lines-after-imports = 2
 
 [tool.ruff.lint.per-file-ignores]
+"speechkit/api/middlewares/auth.py" = [
+    "ANN001",
+    "ANN204",
+    "PLR0911",
+]
 "tests/*" = [
     "PLR2004",  # ignore magic value used in comparison in tests
     "S101",  # ignore asserts in tests
