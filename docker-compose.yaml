@@ -1,0 +1,54 @@
+services:
+  api:
+    image: registry.tochka-tech.com/svc_speechkit/app:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=api
+      - LOCAL_FILE_STORAGE_BASE_DIR=/tmp/file_storage
+      - ENVIRONMENT=stage
+    env_file:
+      - conf/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  worker:
+    image: registry.tochka-tech.com/svc_speechkit/app:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - APP_NAME=worker
+    env_file:
+      - conf/.env
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  postgres:
+    container_name: speechkit_postgres
+    image: "registry.tochka-tech.com/proxy_docker-io/library/postgres:16"
+    environment:
+      POSTGRES_DB: srv_speechkit
+      POSTGRES_USER: srv_speechkit
+      POSTGRES_PASSWORD: look_in_vault
+    ports:
+      - "5432:5432"
+
+  rabbitmq:
+    container_name: speechkit_rabbitmq
+    image: registry.tochka-tech.com/oci_rabbitmq/rabbitmq:latest
+    environment:
+      RABBITMQ_DEFAULT_USER: speechkit
+      RABBITMQ_DEFAULT_PASS: look_in_vault
+      RABBITMQ_DEFAULT_VHOST: speechkit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "61613:61613"
