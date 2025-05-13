@@ -1,15 +1,18 @@
 services:
   api:
     image: registry.tochka-tech.com/svc_speechkit/app:local
+    platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+      - "8001:8001"
     environment:
       - APP_NAME=api
       - LOCAL_FILE_STORAGE_BASE_DIR=/tmp/file_storage
       - ENVIRONMENT=stage
+      - METRICS_PORT=8001
     env_file:
       - conf/.env
     depends_on:
@@ -18,11 +21,16 @@ services:
 
   worker:
     image: registry.tochka-tech.com/svc_speechkit/app:local
+    platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
     environment:
       - APP_NAME=worker
+      - ENVIRONMENT=stage
+      - METRICS_PORT=8002
     env_file:
       - conf/.env
     volumes:
