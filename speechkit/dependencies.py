@@ -19,7 +19,7 @@ from taskiq_pg.asyncpg import AsyncpgResultBackend
 
 from speechkit.domain.repository import authentication, file_content, file_metadata, file_system, task
 from speechkit.domain.service import inference_runner, model_downloader, recognition_service
-from speechkit.infrastructure import logs, settings
+from speechkit.infrastructure import logs, metrics, settings
 from speechkit.infrastructure.database import session_provider
 from speechkit.infrastructure.repository import (
     auth_storage,
@@ -71,19 +71,15 @@ def get_settings() -> settings.Settings:
 
 
 async def get_metrics_server() -> prometheus_async.aio.web.MetricsHTTPServer | None:
-    # TODO: Probably can use just prometheus_async.aio.web.MetricsHTTPServer
-    # global _metrics_server
-    # if _metrics_server is None:
-        # settings = get_settings()
-        # if settings.metrics_port:
-        #     from tochka_infrastructure.metrics import start_metric_server
-        #
-        #     _metrics_server = await start_metric_server(
-        #         port=settings.metrics_port,
-        #     )
-        #     _exit_stack.push_async_callback(_metrics_server.close)
-    # return _metrics_server
-    pass
+    global _metrics_server
+    if _metrics_server is None:
+        settings = get_settings()
+        if settings.metrics_port:
+            _metrics_server = await metrics.start_metric_server(
+                port=settings.metrics_port,
+            )
+            _exit_stack.push_async_callback(_metrics_server.close)
+    return _metrics_server
 
 
 
@@ -98,7 +94,7 @@ def get_session_provider() -> session_provider.AsyncPostgresSessionProvider:
 
 
 def get_broker() -> taskiq.AsyncBroker:
-    from speechkit.broker import tasks
+    from speechkit.broker import middlewares, tasks
 
     global _broker
     if _broker is None:
@@ -106,14 +102,15 @@ def get_broker() -> taskiq.AsyncBroker:
         if settings.broker_type == 'amqp' and settings.amqp:
             logger.info('Use AioPikaBroker')
             _broker = taskiq_aio_pika.AioPikaBroker(
-                url=settings.amqp.get_url(),
-            ).with_result_backend(
-                AsyncpgResultBackend(
-                    f'postgresql://{settings.postgres.user}:{quote(settings.postgres.password.get_secret_value())}@{settings.postgres.host}:{settings.postgres.port}/{settings.postgres.database}',
-                ),
-            ).with_middlewares(
-                taskiq.PrometheusMiddleware(),
-            )
+                    url=settings.amqp.get_url(),
+                ).with_result_backend(
+                    AsyncpgResultBackend(
+                        f'postgresql://{settings.postgres.user}:{quote(settings.postgres.password.get_secret_value())}@{settings.postgres.host}:{settings.postgres.port}/{settings.postgres.database}',
+                    ),
+                ).with_middlewares(
+                    middlewares.PrometheusMiddleware(),
+                    middlewares.StructlogMiddleware(),
+                )
         else:
             logger.info('Use InMemoryBroker')
             _broker = taskiq.InMemoryBroker()
@@ -128,6 +125,7 @@ def get_broker() -> taskiq.AsyncBroker:
                 log_level=settings.log_level,
                 json_log=settings.environment not in ('local', 'unknown', 'development'),
             )
+            await get_metrics_server()
             await preconfigure_inference_runner()
 
         _exit_stack.push_async_callback(_broker.shutdown)
