@@ -10,6 +10,7 @@ from starlette_exporter import PrometheusMiddleware
 from speechkit import dependencies
 from speechkit.api import middlewares
 from speechkit.api.routers import recognition, system
+from speechkit.infrastructure import logs
 
 
 @contextlib.asynccontextmanager
@@ -38,11 +39,10 @@ async def lifespan(_: fastapi.FastAPI) -> tp.AsyncGenerator[None, None]:
 
 def get_app() -> fastapi.FastAPI:
     settings = dependencies.get_settings()
-    # TODO: rewrite with structlog
-    # logs.configure_logging(
-    #     path_to_log_config=settings.log_config_path,
-    #     root_level=settings.log_level,
-    # )
+    logs.configure_logging(
+        log_level=settings.log_level,
+        json_log=settings.environment not in ('local', 'unknown', 'development'),
+    )
 
     app = fastapi.FastAPI(
         title='Speechkit',
@@ -56,7 +56,12 @@ def get_app() -> fastapi.FastAPI:
     app.include_router(router=recognition.router, prefix='/api/v1')
     app.include_router(router=system.router)
 
-    app.add_middleware(asgi_correlation_id.CorrelationIdMiddleware)
+    if settings.enable_auth:
+        app.add_middleware(
+            middlewares.AuthMiddleware,
+            auth_repository=dependencies.get_auth_repository(),
+            public_paths=['/liveness', '/readiness', '/docs', '/openapi.json'],
+        )
     app.add_middleware(
         PrometheusMiddleware,
         app_name='speechkit',
@@ -64,11 +69,6 @@ def get_app() -> fastapi.FastAPI:
         group_paths=True,
         skip_paths=['/liveness', '/readiness', '/docs', '/redoc', '/openapi.json', '/'],
     )
-
-    if settings.enable_auth:
-        app.add_middleware(
-            middlewares.AuthMiddleware,  # type: ignore[attr-defined]
-            auth_repository=dependencies.get_auth_repository(),
-            public_paths=['/liveness', '/readiness', '/docs', '/openapi.json'],
-        )
+    app.add_middleware(middlewares.StructLogMiddleware)
+    app.add_middleware(asgi_correlation_id.CorrelationIdMiddleware)
     return app

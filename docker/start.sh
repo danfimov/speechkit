@@ -12,7 +12,7 @@ fi
 if [ "$APP_NAME" = "api" ]; then
     echo "Starting API server"
     uvicorn speechkit.api.__main__:get_app --host "" --port 8000 --factory \
-        --log-config=docker/json-logging.yaml --proxy-headers --forwarded-allow-ips=* --timeout-keep-alive=60
+        --proxy-headers --forwarded-allow-ips=* --timeout-keep-alive=60
 elif [ "$APP_NAME" = "worker" ]; then
     echo "Starting taskiq worker"
     taskiq worker speechkit.broker:broker speechkit.broker.tasks --workers 1 --shutdown-timeout 10

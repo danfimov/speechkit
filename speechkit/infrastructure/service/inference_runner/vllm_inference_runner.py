@@ -1,15 +1,15 @@
 import io
-import logging
 import uuid
 
 import librosa
 import numpy as np
+import structlog
 import vllm  # type: ignore[import-not-found]
 
 from speechkit.domain.service import inference_runner
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class VllmInferenceRunnerService(
@@ -124,7 +124,11 @@ class VllmInferenceRunnerService(
             str: The complete transcription text for the audio file
 
         """
+        logger.debug('Starting inference process')
         file_data = await self._get_audio_in_converted_format(task_id)
+        logger.debug('Audio file is converted')
         segments = self._split_audio_data_to_segments(audio_data=file_data)
+        logger.debug('Audio file is split into segments')
         transcriptions_for_segments = self._run_inference(segments)
+        logger.debug('Inference is done, transcriptions are decoded')
         return self._postprocess_transcriptions(transcriptions_for_segments)

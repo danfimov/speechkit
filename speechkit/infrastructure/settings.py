@@ -1,5 +1,4 @@
 import os
-import pathlib
 import typing as tp
 from urllib.parse import quote, urlparse
 
@@ -121,16 +120,10 @@ class Settings(pydantic_settings.BaseSettings):
         validation_alias=pydantic.AliasChoices('ENVIRONMENT', 'SENTRY_ENVIRONMENT'),
         description='ENVIRONMENT есть в переменных окружения в каждом pod в k8s',
     )
-
     log_level: str = pydantic.Field(
         default='INFO',
         description='Желательно не использовать DEBUG в логах, кроме случаев локальной отладки',
     )
-    log_config_path: pathlib.Path | None = pydantic.Field(
-        default=pathlib.Path('docker/json-logging.yaml'),
-        description='Путь к конфигурации логирования в формате YAML',
-    )
-
     metrics_port: int | None = None
     sentry: SentrySettings | None = None
     tracing: TracingSettings = TracingSettings()

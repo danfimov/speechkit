@@ -1,18 +1,19 @@
-
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+from speechkit import dependencies
+from speechkit.infrastructure import logs
 from speechkit.infrastructure.database.schemas import sa_metadata
 
 
 config = context.config
 target_metadata = sa_metadata
+settings = dependencies.get_settings()
 
-# TODO: rewrite it with structlog
-# configure_logging(
-#     path_to_log_config=Path(config.get_main_option('log_config', 'docker/plain-logging.yaml')),
-#     root_level='INFO',
-# )
+logs.configure_logging(
+    log_level=settings.log_level,
+    json_log=settings.environment not in ('local', 'unknown', 'development'),
+)
 
 
 def run_migrations_offline() -> None:

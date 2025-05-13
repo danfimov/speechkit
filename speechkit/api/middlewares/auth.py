@@ -1,5 +1,3 @@
-# type: ignore  # noqa: PGH003
-
 import base64
 import hashlib
 
@@ -21,11 +19,11 @@ class AuthMiddleware:
         self.auth_repository = auth_repository
         self.public_paths = public_paths or ['/public']
 
-    async def __call__(  # noqa: ANN204, PLR0911
+    async def __call__(  # type: ignore[no-untyped-def]
         self,
-        scope,  # noqa: ANN001
-        receive,  # noqa: ANN001
-        send,  # noqa: ANN001
+        scope,
+        receive,
+        send,
     ):
         if scope['type'] != 'http':
             return await self.app(scope, receive, send)
@@ -58,11 +56,11 @@ class AuthMiddleware:
         except Exception:  # noqa: BLE001
             return await self.unauthorized_response(scope, receive, send)
 
-    async def unauthorized_response(
+    async def unauthorized_response(  # type: ignore[no-untyped-def]
         self,
-        scope,  # noqa: ANN001
-        receive,  # noqa: ANN001
-        send,  # noqa: ANN001
+        scope,
+        receive,
+        send,
     ) -> None:
         response = fastapi.Response(
             status_code=401,

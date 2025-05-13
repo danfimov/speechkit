@@ -1,3 +1,4 @@
+import structlog.contextvars
 import taskiq_pipelines
 from taskiq.abc import broker as taskiq_broker
 
@@ -31,6 +32,7 @@ class TaskiqRecognitionService(recognition_service.AbstractRecognitionService):
         In case of an error, returns the error text.
         """
         task_id = await self.task_repository.create()
+        structlog.contextvars.bind_contextvars(task_id=str(task_id))
         await self.file_system_repository.save(
             file_content=audio_file_content,
             file_name=audio_file_name,
