@@ -1,4 +1,3 @@
-import taskiq_pipelines
 from taskiq.abc import broker as taskiq_broker
 
 from speechkit.domain.repository import file_system, task
@@ -13,10 +12,7 @@ class TaskiqRecognitionService(recognition_service.AbstractRecognitionService):
         broker: taskiq_broker.AsyncBroker,
     ) -> None:
         super().__init__(file_system_repository, task_repository)
-        self.pipeline: taskiq_pipelines.Pipeline = taskiq_pipelines.Pipeline(
-            broker=broker,
-            task=broker.find_task('speechkit.broker.tasks.inference:run_inference'),
-        )
+        self.broker = broker
 
     async def act(
         self,
@@ -30,6 +26,8 @@ class TaskiqRecognitionService(recognition_service.AbstractRecognitionService):
 
         In case of an error, returns the error text.
         """
+        from speechkit.broker.tasks.inference import run_inference
+
         task_id = await self.task_repository.create()
         await self.file_system_repository.save(
             file_content=audio_file_content,
@@ -37,8 +35,8 @@ class TaskiqRecognitionService(recognition_service.AbstractRecognitionService):
             content_type=audio_file_content_type,
             task_id=task_id,
         )
-        pipeline = await self.pipeline.kiq(task_id)
-        pipeline_result = await pipeline.wait_result()
-        if pipeline_result.error:
-            raise recognition_service.RecognitionServiceError(pipeline_result.error)
-        return str(pipeline_result.return_value)
+        task = await run_inference.kiq(task_id)
+        task_result = await task.wait_result()
+        if task_result.error:
+            raise recognition_service.RecognitionServiceError(task_result.error)
+        return str(task_result.return_value)
