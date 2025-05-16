@@ -20,6 +20,12 @@ class HuggingFaceModelDownloader(model_downloader.AbstractModelDownloaderService
 
     async def act(self, model_name: str, destination_path: pathlib.Path) -> None:
         if model_name == 'openai/whisper-tiny.en':
+            transformers.WhisperProcessor.from_pretrained(
+                'openai/whisper-tiny.en',
+                cache_dir=destination_path,
+                local_files_only=False,
+                force_download=True,
+            )
             transformers.WhisperForConditionalGeneration.from_pretrained(
                 'openai/whisper-tiny.en',
                 cache_dir=destination_path,
@@ -35,6 +41,12 @@ class HuggingFaceModelDownloader(model_downloader.AbstractModelDownloaderService
             )
             model.save_pretrained(destination_path)
         elif model_name == 'antony66/whisper-large-v3-russian':
+            transformers.WhisperProcessor.from_pretrained(
+                'antony66/whisper-large-v3-russian',
+                cache_dir=destination_path,
+                local_files_only=False,
+                force_download=True,
+            )
             transformers.WhisperForConditionalGeneration.from_pretrained(
                 'antony66/whisper-large-v3-russian',
                 cache_dir=destination_path,

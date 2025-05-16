@@ -260,8 +260,6 @@ async def provide_inference_runner(  # noqa: PLR0913
     whisper_processor: transformers.WhisperProcessor,
     file_system_repository: file_system.FileSystemRepository,
 ) -> inference_runner.AbstractInferenceRunner:
-    # TODO: add other inference runners
-
     match settings.inference_type:
         case 'onnx':
             from speechkit.infrastructure.service.inference_runner import onnx_inference_runner
