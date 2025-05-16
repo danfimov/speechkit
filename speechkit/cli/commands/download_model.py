@@ -1,21 +1,19 @@
-import logging
 import pathlib
 
 import click
+import structlog
 import uvloop
-from tochka_infrastructure import logs
 
 from speechkit import dependencies
+from speechkit.cli.commands.root import cli
+from speechkit.domain.service import model_downloader
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger('speechkit.cli')
 
 
 async def download_and_save_model(model_name: str, save_path: str) -> None:
-    settings = dependencies.get_settings()
-    logs.configure_logging(settings.log_config_path, settings.log_level)
-
-    service = dependencies.get_model_downloader()
+    service = await dependencies.container(model_downloader.AbstractModelDownloaderService)
     try:
         await service.act(
             destination_path=pathlib.Path(save_path),
@@ -24,22 +22,18 @@ async def download_and_save_model(model_name: str, save_path: str) -> None:
     except Exception:
         logger.exception('Error occurred during model downloading')
     finally:
-        await dependencies.stop_application()
+        await dependencies.container.close()
 
 
-@click.command()
+@cli.command('download-model')
 @click.option(
     '--model_name',
     default='antony66/whisper-large-v3-russian',
     help='Name of the model to download from Hugging Face',
 )
 @click.option('--save_path', default='data/whisper-model', help='Path to save the downloaded model')
-def command(model_name: str, save_path: str) -> None:
+def download_model_command(model_name: str, save_path: str) -> None:
     """Download a model from Hugging Face or S3 and save it to the specified path."""
     uvloop.run(
         download_and_save_model(model_name, save_path),
     )
-
-
-if __name__ == '__main__':
-    command()
