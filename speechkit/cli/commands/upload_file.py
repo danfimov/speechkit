@@ -85,7 +85,7 @@ async def upload_file(directory: pathlib.Path, destination_prefix: str) -> None:
         access_key=settings.s3.access_key,
         secret_key=settings.s3.secret_key,
         region=settings.s3.region,
-        bucket=settings.s3.bucket_models,
+        bucket=settings.s3_bucket_models,
     )
     try:
         await service.upload_directory(directory, destination_prefix)

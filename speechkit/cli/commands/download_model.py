@@ -13,7 +13,7 @@ logger = structlog.get_logger('speechkit.cli')
 
 
 async def download_and_save_model(model_name: str, save_path: str) -> None:
-    service = await dependencies.container(model_downloader.AbstractModelDownloaderService)
+    service = await dependencies.container.get(model_downloader.AbstractModelDownloaderService)
     try:
         await service.act(
             destination_path=pathlib.Path(save_path),
